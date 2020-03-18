@@ -1,0 +1,68 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin="" />
+	<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js" integrity="sha512-WXoSHqw/t26DszhdMhOXOkI7qCiv5QWXhH9R7CgvgZMHz1ImlkVQ3uNsiQKu5wwbbxtPzFXd1hK4tzno2VqhpA==" crossorigin=""></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="dist/MarkerCluster.css" />
+	<link rel="stylesheet" href="dist/MarkerCluster.Default.css" />
+	<script src="dist/leaflet.markercluster-src.js"></script>
+ </head>
+<body>
+<script src="COVID19.js"></script>
+<style>
+#mapid { height: 100%; }
+#panel {
+    position: absolute;
+    top: 90px;
+    left: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 10px;
+  }
+.block {
+  display: block;
+  width: 100%;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: left;
+}
+ </style>
+<div id="mapid"></div>
+<div id ="panel" class="leaflet-bar">
+	Options
+	<select size="1" name="relation" onchange="window.location.href=this.value;">
+    <option value="Chart/chart.html">Countries Affected</option>
+    <option value="https://www.who.int/news-room/q-a-detail/q-a-coronaviruses">How to protect</option>
+	<option value="signuppage.html">Have more info?</option>
+   </select>
+   </div>
+<script>
+var mymap = L.map('mapid').setView([51.505, -0.09], 5);
+var googleStreets = L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=ecMFW1xjOlJdPRB5qmpO',
+{attribution:'<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> \n\
+<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>\n\ <p> Data upto date Feb 20,2020 <\p>'},{
+    minzoom: 4,
+	maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+}).addTo(mymap);
+// var geo = L.geoJSON(geojson,{});
+// geo.addTo(mymap);
+ // new akhatro
+ var markers = L.markerClusterGroup();
+ var geoJsonLayer = L.geoJson(geojson, {
+			onEachFeature: function (feature, layer) {
+				layer.bindPopup('<pre>'+JSON.stringify(feature.properties,null,' ').replace(/[\{\}"]/g,'')+'</pre>');
+				//console.log(feature.properties);
+			}
+		});
+		markers.addLayer(geoJsonLayer);
+
+		mymap.addLayer(markers);
+		mymap.fitBounds(markers.getBounds());
+</script>
+
+
+</body>
+</html>
