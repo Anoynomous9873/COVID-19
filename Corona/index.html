@@ -1,0 +1,78 @@
+<html>
+<head>
+ 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin="" />
+	<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js" integrity="sha512-WXoSHqw/t26DszhdMhOXOkI7qCiv5QWXhH9R7CgvgZMHz1ImlkVQ3uNsiQKu5wwbbxtPzFXd1hK4tzno2VqhpA==" crossorigin=""></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="dist/MarkerCluster.css" />
+	<link rel="stylesheet" href="dist/MarkerCluster.Default.css" />
+	<script src="dist/leaflet.markercluster-src.js"></script>
+
+</head>
+
+<body>
+
+<script src="COVID19.js"></script> <!-- loading the geojson file containing the data -->
+
+<style>
+#mapid { height: 100%, width: device-width; }  <!-- set the map height to be 100% so it will fit the device width  -->
+
+#panel 
+{										<!-- style for the flying button -->
+    position: absolute;
+    top: 90px;
+    left: 10px;
+    z-index: 1000;
+    background: white;
+    padding: 10px;
+}
+
+</style>
+
+<div id="mapid"></div> <!-- leaflet can be used inside html using the div id = "map" function -->
+
+<div id ="panel" class="leaflet-bar"> <!-- used for creating the flying button -->
+	Options
+	<select size="1" name="relation" onchange="window.location.href=this.value;">
+    <option value="Chart/chart.html">Countries Affected</option>
+    <option value="https://www.who.int/news-room/q-a-detail/q-a-coronaviruses">How to protect</option>
+	<option value="signuppage.html">Have more info?</option>
+   </select>
+</div>
+
+<script>
+
+	var mymap = L.map('mapid').setView([51.505, -0.09], 5);  <!-- set the default viewport -->
+	var googleStreets = L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=ecMFW1xjOlJdPRB5qmpO',
+	{attribution:'<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> \n\
+	<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>\n\ <p> Data upto date Feb 20,2020 <\p>'},
+	{
+		minzoom: 4,
+		maxZoom: 20,
+		subdomains:['mt0','mt1','mt2','mt3']
+		
+	}).addTo(mymap);  <!-- import the map tile and add it to the map -->
+	
+	var markers = L.markerClusterGroup();  <!-- create clusters which helps render the markers quicker -->
+	
+	var geoJsonLayer = L.geoJson(geojson, 	<!-- loading the geojson data using the variable 'geojson' -->
+		{
+			onEachFeature: function (feature, layer)   <!-- function to convert the features into layers -->
+			{
+			layer.bindPopup('<pre>'+JSON.stringify(feature.properties,null,' ').replace(/[\{\}"]/g,'')+'</pre>');
+			//console.log(feature.properties);
+			}
+		}
+		);
+			
+	markers.addLayer(geoJsonLayer);
+
+	mymap.addLayer(markers);
+	mymap.fitBounds(markers.getBounds());
+
+</script>
+
+</body>
+
+</html>
